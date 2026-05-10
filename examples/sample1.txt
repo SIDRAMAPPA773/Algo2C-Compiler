@@ -1,0 +1,13 @@
+START
+READ a
+READ b
+
+c = a + b
+
+IF c > 10 THEN
+    PRINT c
+ELSE
+    PRINT a
+ENDIF
+
+END

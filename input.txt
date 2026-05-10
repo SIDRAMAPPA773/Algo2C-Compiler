@@ -1,0 +1,49 @@
+START
+
+READSTR student
+READ m1
+READ m2
+READ m3
+
+total = m1 + m2 + m3
+avg = total / 3
+
+PRINT student
+PRINT total
+PRINT avg
+
+IF avg >= 90 THEN
+
+    PRINT avg
+
+ELSE
+
+    IF avg >= 35 THEN
+
+        PRINT total
+
+    ELSE
+
+        PRINT 0
+
+    ENDIF
+
+ENDIF
+
+FOR i = 1 TO 3
+
+    PRINT i
+
+ENDFOR
+
+x = 0
+
+WHILE x < 5 DO
+
+    PRINT x
+
+    x = x + 1
+
+ENDWHILE
+
+END

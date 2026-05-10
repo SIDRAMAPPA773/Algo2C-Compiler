@@ -1,0 +1,25 @@
+node_modules/
+.env
+
+# Flex/Bison generated files
+lex.yy.c
+parser.tab.c
+parser.tab.h
+*.o
+
+# Binaries
+compiler.exe
+compiler
+backend/compiler.exe
+backend/compiler
+
+# Temporary files and logs
+*.log
+logs/
+.DS_Store
+tmp/
+scratch/
+
+# IDE files
+.vscode/
+.idea/

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algo2C Compiler IDE</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- CodeMirror -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+    <!-- PrismJS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/animations.css">
+</head>
+<body class="bg-gray-900 text-gray-200 font-inter h-screen flex flex-col overflow-hidden">
+    
+    <!-- Navbar -->
+    <nav class="h-14 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-6 shrink-0 glass-nav">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-500 flex items-center justify-center font-bold text-white shadow-lg shadow-cyan-500/30">
+                A2C
+            </div>
+            <h1 class="text-xl font-semibold text-white tracking-wide">Algo2C <span class="text-cyan-400 font-light">Compiler</span></h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <button id="btn-reset" class="px-4 py-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors">Reset</button>
+            <button id="btn-compile" class="px-6 py-1.5 text-sm font-medium bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-md shadow-lg shadow-cyan-500/20 transition-all transform hover:scale-105 btn-glow">
+                <span class="flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Compile
+                </span>
+            </button>
+            <button id="btn-download" class="px-4 py-1.5 text-sm font-medium border border-gray-600 hover:border-gray-400 rounded-md transition-colors flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Download .C
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+        
+        <!-- Left Panel: Editor -->
+        <div class="w-full md:w-1/2 flex flex-col border-r border-gray-800 bg-gray-900/50 relative">
+            <div class="h-10 bg-gray-800/80 border-b border-gray-700 flex items-center px-4 shrink-0">
+                <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Algorithm Editor</span>
+            </div>
+            <div class="flex-1 overflow-hidden" id="editor-container">
+                <textarea id="code-editor">START
+READ a
+READ b
+
+c = a + b
+
+IF c > 10 THEN
+    PRINT c
+ELSE
+    PRINT a
+ENDIF
+
+END</textarea>
+            </div>
+        </div>
+
+        <!-- Right Panel: Generated Code -->
+        <div class="w-full md:w-1/2 flex flex-col bg-gray-900/50">
+            <div class="h-10 bg-gray-800/80 border-b border-gray-700 flex items-center justify-between px-4 shrink-0">
+                <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Generated C Code</span>
+                <button id="btn-copy" class="text-gray-400 hover:text-white transition-colors" title="Copy Code">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                </button>
+            </div>
+            <div class="flex-1 overflow-auto p-4 custom-scrollbar">
+                <pre><code id="generated-code" class="language-c">/* Output will appear here */</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Panels -->
+    <div class="h-64 bg-gray-900 border-t border-gray-700 flex flex-col shrink-0 bottom-panel-container">
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-800 bg-gray-800/50 px-2 shrink-0">
+            <button class="tab-btn active px-4 py-2 text-xs font-medium text-cyan-400 border-b-2 border-cyan-400" data-target="console">Console & Logs</button>
+            <button class="tab-btn px-4 py-2 text-xs font-medium text-gray-400 hover:text-gray-200" data-target="tokens">Token Table</button>
+            <button class="tab-btn px-4 py-2 text-xs font-medium text-gray-400 hover:text-gray-200" data-target="symbols">Symbol Table</button>
+        </div>
+        
+        <!-- Tab Contents -->
+        <div class="flex-1 relative overflow-hidden bg-black/40">
+            
+            <!-- Console -->
+            <div id="console" class="tab-content absolute inset-0 p-4 overflow-auto custom-scrollbar active font-fira text-sm">
+                <div id="console-output" class="text-gray-300 whitespace-pre-wrap">Compiler ready. Press Compile to begin.</div>
+            </div>
+            
+            <!-- Tokens -->
+            <div id="tokens" class="tab-content absolute inset-0 p-0 overflow-auto custom-scrollbar hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-800/80 sticky top-0">
+                        <tr>
+                            <th class="px-4 py-2 text-xs text-gray-400 font-semibold border-b border-gray-700">Line</th>
+                            <th class="px-4 py-2 text-xs text-gray-400 font-semibold border-b border-gray-700">Lexeme</th>
+                            <th class="px-4 py-2 text-xs text-gray-400 font-semibold border-b border-gray-700">Token Type</th>
+                        </tr>
+                    </thead>
+                    <tbody id="token-tbody" class="text-sm font-fira text-gray-300">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Symbols -->
+            <div id="symbols" class="tab-content absolute inset-0 p-0 overflow-auto custom-scrollbar hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-800/80 sticky top-0">
+                        <tr>
+                            <th class="px-4 py-2 text-xs text-gray-400 font-semibold border-b border-gray-700">Name</th>
+                            <th class="px-4 py-2 text-xs text-gray-400 font-semibold border-b border-gray-700">Type</th>
+                            <th class="px-4 py-2 text-xs text-gray-400 font-semibold border-b border-gray-700">Line Declared</th>
+                        </tr>
+                    </thead>
+                    <tbody id="symbol-tbody" class="text-sm font-fira text-gray-300">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    
+    <script src="/js/compilerAPI.js"></script>
+    <script src="/js/editor.js"></script>
+    <script src="/js/uiManager.js"></script>
+    <script src="/js/controller.js"></script>
+</body>
+</html>

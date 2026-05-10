@@ -1,0 +1,5 @@
+START
+FOR i = 1 TO 10
+    PRINT i
+ENDFOR
+END
